@@ -66,7 +66,7 @@ export default {
       }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
+      if (value.length < 2) {
         callback(new Error('The password can not be less than 6 digits'))
       } else {
         callback()
@@ -189,7 +189,7 @@ $light_gray:#eee;
   width: 100%;
   background-color: $bg;
   overflow: hidden;
-  background: url(~@/assets/1.png);
+  background: url(~@/assets/1.jpg);
   background-size: 100% 100%;
 
   .login-form {

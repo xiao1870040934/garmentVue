@@ -48,7 +48,7 @@ service.interceptors.response.use(
     // 服务器响应失败在干什么
     if (res.code !== 200 && res.code !== 20000) {
       Message({
-        message: res.message || 'Error',
+        message: res.msg || 'Error',
         type: 'error',
         duration: 5 * 1000
       })
