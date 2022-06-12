@@ -148,6 +148,7 @@ export default {
         let result= await this.$API.inwharehouse.removeInstoreById(id)
         if(result.code ===200){
           this.$message.info('删除成功')
+          this.getPageList();
         }
       },
       async editInstore(id) {

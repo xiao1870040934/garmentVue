@@ -10,6 +10,8 @@
       <el-table-column label="操作时间" prop="updateTime" width="width"></el-table-column>
       <el-table-column label="操作" width="250px">
           <template slot-scope="scope">
+              <HintButton type="info" size="mini" icon="el-icon-user-solid" title="分配角色"
+              @click="showAssignRole(scope.row)"/>
               <el-button type="warning" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)">修改</el-button>
               <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUserById(scope.row.id)">删除</el-button>
           </template>
@@ -64,6 +66,27 @@
           <el-button type="primary" @click="editUserInfo">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 设置角色对话框 -->
+    <el-dialog title="设置角色" :visible.sync="dialogRoleVisible" :before-close="resetRoleData">
+      <el-form label-width="80px">
+        <el-form-item label="用户名">
+          <el-input disabled :value="user.username"></el-input>
+        </el-form-item>
+
+        <el-form-item label="角色列表">
+          <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+          <div style="margin: 15px 0;"></div>
+          <el-checkbox-group v-model="userRoleIds" @change="handleCheckedChange">
+            <el-checkbox v-for="role in allRoles" :key="role.id" :label="role.id">{{role.name}}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+      </el-form>
+
+      <div slot="footer">
+        <el-button  type="primary" @click="assignRole">保存</el-button>
+        <el-button @click="resetRoleData">取消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -109,7 +132,13 @@ export default {
       },
       dialogFormVisible: false,
       editDialogVisible: false,
+      dialogRoleVisible: false,
       editForm: {},
+      user: {},
+      allRoles: [], // 所有角色列表
+      userRoleIds: [], // 用户的角色ID的列表
+      isIndeterminate: false, // 是否是不确定的
+      checkAll: false, // 是否全选
       addFormRules: {
         username: [
           { required: true, message: '请输入用户名', trigger: 'blur'},
@@ -144,8 +173,8 @@ export default {
       const {pageNum,pageSize}=this;
       let result= await this.$API.clientMark.reqUserList(pageNum,pageSize)
       if(result.code === 200){
-        this.total = parseInt(result.data.total)
-        this.list = result.data.list;
+        this.total = parseInt(result.data.total)-1
+        this.list = result.data.list.filter(item=>item.username!='admin');
       }
     },
     handleSizeChange(newSize) {
@@ -211,6 +240,59 @@ export default {
           this.$message.success('删除用户成功！');
           this.getPageList();
       }
+    },
+    showAssignRole(user){
+      this.user = user
+      this.dialogRoleVisible = true
+      this.getRoles()
+    },
+    async getRoles() {
+      const result = await this.$API.clientMark.getRoles(this.user.id)
+      const {allRolesList, assignRoles} = result.data
+      this.allRoles = allRolesList
+      this.userRoleIds = assignRoles.map(item => item.id)
+      this.checkAll = allRolesList.length===assignRoles.length
+      this.isIndeterminate = assignRoles.length>0 && assignRoles.length<allRolesList.length
+    },
+    /* 
+    全选勾选状态发生改变的监听
+    */
+    handleCheckAllChange(value) {
+      // value 当前勾选状态true/false
+      // 如果当前全选, userRoleIds就是所有角色id的数组, 否则是空数组
+      this.userRoleIds = value ? this.allRoles.map(item => item.id) : []
+      // 如果当前不是全选也不全不选时, 指定为false
+      this.isIndeterminate = false
+    },
+    /* 
+    角色列表选中项发生改变的监听
+    */
+    handleCheckedChange (value) {
+      const {userRoleIds, allRoles} = this
+      this.checkAll = userRoleIds.length === allRoles.length && allRoles.length>0
+      this.isIndeterminate = userRoleIds.length>0 && userRoleIds.length<allRoles.length
+    },
+    /* 
+    请求给用户进行角色授权
+    */
+    async assignRole () {
+      const userId = this.user.id
+      const roleIds = this.userRoleIds.join(',')
+      const result = await this.$API.clientMark.assignRoles(userId, roleIds)
+      if (result.code ===200){
+        this.$message.success( '分配角色成功')
+        this.resetRoleData()
+      }
+    },
+    /* 
+    重置用户角色的数据
+    */
+    resetRoleData () {
+      this.dialogRoleVisible = false
+      this.allRoles = []
+      this.userRoleIds = []
+      this.isIndeterminate = false
+      this.checkAll = false
     }
   }
 }

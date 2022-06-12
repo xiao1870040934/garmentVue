@@ -39,6 +39,9 @@ Vue.config.productionTip = false
 import API from '@/api'
 // 任意组件可以使用API相关接口
 Vue.prototype.$API=API;
+// 引入全局组件
+import HintButton from '@/components/HintButton';
+Vue.component(HintButton.name,HintButton);
 new Vue({
   el: '#app',
   router,

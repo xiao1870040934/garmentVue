@@ -2,7 +2,7 @@
   <div>
       <el-row :gutter="20">
         <el-col :span="8">
-          <el-input placeholder="请选择出库日期" v-model="queryInfo.outTime" clearable @clear="getPageList"></el-input>
+          <el-input placeholder="请选择所出仓库" v-model="queryInfo.storage" clearable @clear="getPageList"></el-input>
         </el-col>
         <el-col :span="8">
             <el-input placeholder="请输出库单号" v-model="queryInfo.number" clearable @clear="getPageList">
@@ -42,14 +42,11 @@
         <el-table-column prop="name" label="服装名称" width="180"></el-table-column>
         <el-table-column prop="size" label="尺寸" width="180"></el-table-column>
         <el-table-column prop="colour" label="颜色" width="180"></el-table-column>
-        <el-table-column prop="count" label="出库数量" width="180"></el-table-column>
+        <el-table-column prop="outCount" label="出库数量" width="180"></el-table-column>
       </el-table>
     </el-dialog>
     <!-- 修改对话框 -->
-    <el-dialog
-      title="修改出库单"
-      :visible.sync="editDialogVisible"
-      width="50%">
+    <el-dialog title="修改出库单" :visible.sync="editDialogVisible" width="50%">
       <el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="80px">
           <el-form-item label="出库单号">
               <el-input v-model="editForm.number" disabled></el-input>
@@ -133,6 +130,14 @@ export default {
         }
         this.editDialogVisible=true
       },
+      handleSizeChange(newSize) {
+        this.queryInfo.pageSize = newSize;
+        this.getPageList();
+      },
+      handleCurrentChange(newPage) {
+        this.queryInfo.pageNum = newPage
+        this.getPageList();
+      },
       async removeOutstore(id) {
         const confirmResult = await this.$confirm('此操作将永久删除该出库单, 是否继续?', '提示', {
           confirmButtonText: '确定',
@@ -147,6 +152,7 @@ export default {
         let result= await this.$API.outwharehouse.removeOutStoreById(id)
         if(result.code ===200){
           this.$message.info('删除成功')
+          this.getPageList();
         }
       },
       editOutStoreInfo() {

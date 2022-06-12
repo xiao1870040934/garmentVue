@@ -4,6 +4,8 @@ import * as providerMark from './person/providerMark'
 import * as goodsManage from './person/goodsManage'
 import * as inwharehouse from './person/inwarehouse'
 import * as outwharehouse from './person/outwarehouse'
+import * as roleManage from './person/roleManage'
+import * as permission from './person/permission'
 
 // 对外暴露
 export default {
@@ -11,5 +13,7 @@ export default {
     providerMark,
     goodsManage,
     inwharehouse,
+    roleManage,
+    permission,
     outwharehouse
 }

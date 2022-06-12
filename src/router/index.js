@@ -30,6 +30,7 @@ import Layout from '@/layout'
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
+// 常量路由
 export const constantRoutes = [
   {
     path: '/login',
@@ -55,10 +56,17 @@ export const constantRoutes = [
     }]
   },
 
+
+
+]
+
+// 异步路由
+export const asyncRouters = [
   {
     path: '/person',
     component: Layout,
     name: 'Person',
+    redirect: '/person/clientMark',
     meta: { title: '系统管理', icon: 'el-icon-goods' },
     children: [
       {
@@ -95,7 +103,7 @@ export const constantRoutes = [
       },
       {
         path: 'outwarehouseManage',
-        name: 'OnwarehouseManage',
+        name: 'OutwarehouseManage',
         component: () => import('@/views/inventory/outstore'),
         meta: { title: '出库管理' }
       },
@@ -113,10 +121,42 @@ export const constantRoutes = [
       }
     ]
   },
-
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  {
+    path: '/permission',
+    component: Layout,
+    name: 'Permission',
+    meta: { title: '权限管理', icon: 'el-icon-user-solid' },
+    children: [
+      {
+        path: 'roleManage',
+        name: 'RoleManage',
+        component: () => import('@/views/permission/role'),
+        meta: { title: '角色管理' }
+      },
+      {
+        name: 'RoleAuth',
+        path: 'auth/:id',
+        component: () => import('@/views/permission/role/roleAuth'),
+        meta: {
+          activeMenu: '/permission/roleManage',
+          title: '角色授权',
+        },
+        hidden: true,
+      },
+      {
+        path: 'authorityManage',
+        name: 'AuthorityManage',
+        component: () => import('@/views/permission/authority'),
+        meta: { title: '菜单管理' }
+      }  
+    ]
+  }
 ]
+
+// 任意路由 :当路径出现错误的时候重定向至404
+export const anyRouter = { path: '*', redirect: '/404', hidden: true };
+
+
 
 const createRouter = () => new Router({
   // mode: 'history', // require service support
