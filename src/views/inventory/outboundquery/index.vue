@@ -158,7 +158,7 @@ export default {
       editOutStoreInfo() {
         this.$refs.editFormRef.validate(async valid => {
           if (valid) {
-            let result= await this.$API.inwharehouse.editOutStoreInfoById(this.editForm)
+            let result= await this.$API.outwharehouse.editOutStoreInfoById(this.editForm)
             if(result.code===200){
               this.$message.success('修改出库单成功')
               this.getPageList();
