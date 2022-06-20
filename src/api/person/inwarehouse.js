@@ -11,3 +11,5 @@ export const removeInstoreById=(id)=>request({url:`/stock/deleteIn/${id}`,method
 export const getInstoreById=(id)=>request({url:`/stock/getIn/${id}`,method:'get'})
 
 export const editPutStoreInfoById=(data)=>request({url:'/stock/editIn',method:'post',data})
+
+export const reqPutStoreList2=()=>request({url:'/stock/getInstore2',method:'get'})

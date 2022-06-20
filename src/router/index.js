@@ -114,6 +114,12 @@ export const asyncRouters = [
         meta: { title: '入库查询' }
       },
       {
+        path: 'inboundQuery2',
+        name: 'InboundQuery2',
+        component: () => import('@/views/inventory/warehousequery2'),
+        meta: { title: '入库查询2' }
+      },
+      {
         path: 'outboundQuery',
         name: 'OutboundQuery',
         component: () => import('@/views/inventory/outboundquery'),
